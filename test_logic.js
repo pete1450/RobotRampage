@@ -1,5 +1,5 @@
 'use strict';
-const L = require('/home/hatch/workspace/robot-rampage/build/logic.js');
+const L = require('./logic.js');
 function assert(c, msg){ if (!c){ console.error('FAIL:', msg); process.exit(1); } }
 
 const rnd = L.makeRng(1234);
