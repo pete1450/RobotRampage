@@ -37,8 +37,8 @@ gun/torch repair action.
 ```bash
 node test_logic.js   # unit tests
 node test_sim.js     # headless playthrough (climb, smash, pilot mode, ...)
-python3 build.py             # writes index.html next to the script's default,
-python3 build.py index.html  # or pass an output path
+python3 build.py              # writes index.html next to the script
+python3 build.py /path/to/index.html  # or pass an output path
 ```
 
 ## CI
