@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>ROBOT RAMPAGE</title>
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0b0e16;
+    font-family:'Courier New',Courier,monospace;-webkit-user-select:none;user-select:none;
+    touch-action:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;}
+  #cv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  #ui{position:absolute;inset:0;pointer-events:none;z-index:5;}
+  #topbar{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;
+    padding:10px 12px;color:#fff;text-shadow:2px 2px 0 #000;}
+  #scoreBox{font-size:20px;font-weight:bold;line-height:1.25;}
+  #scoreBox small{font-size:12px;color:#ffd75e;}
+  #waveBox{font-size:20px;font-weight:bold;text-align:center;}
+  #waveBox small{font-size:12px;color:#9fe8ff;}
+  #muteBtn{pointer-events:auto;background:rgba(0,0,0,.45);border:2px solid #fff;color:#fff;font-size:18px;
+    width:44px;height:44px;border-radius:10px;cursor:pointer;}
+  #hpwrap{position:absolute;top:64px;left:12px;width:200px;max-width:38vw;height:20px;background:rgba(0,0,0,.55);
+    border:2px solid #fff;border-radius:6px;overflow:hidden;}
+  #hpbar{height:100%;width:100%;background:linear-gradient(90deg,#ff3b30,#ffcc00);transition:width .15s;}
+  #banner{position:absolute;top:34%;left:0;right:0;text-align:center;font-size:44px;font-weight:bold;color:#ffe14d;
+    text-shadow:3px 3px 0 #a33,6px 6px 0 #000;opacity:0;transition:opacity .3s;letter-spacing:2px;}
+  #dmg{position:absolute;inset:0;box-shadow:inset 0 0 120px 40px rgba(255,0,0,.55);opacity:0;transition:opacity .1s;}
+  #joy{position:absolute;width:120px;height:120px;border:3px solid rgba(255,255,255,.55);border-radius:50%;
+    background:rgba(255,255,255,.08);display:none;}
+  #knob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;
+    background:rgba(255,255,255,.5);border:3px solid #fff;}
+  #punchBtn{pointer-events:auto;position:absolute;right:22px;bottom:30px;width:96px;height:96px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#ff8a5c,#d63c1e 70%);border:4px solid #fff;color:#fff;
+    font-size:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 4px 0 #7a1f0d,0 6px 12px rgba(0,0,0,.5);}
+  #punchBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #7a1f0d;}
+  #jumpBtn{pointer-events:auto;position:absolute;right:134px;bottom:44px;width:72px;height:72px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#7db8ff,#2a5fd6 70%);border:4px solid #fff;color:#fff;
+    font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 4px 0 #173a7a,0 6px 12px rgba(0,0,0,.5);}
+  #jumpBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #173a7a;}
+  #energyBtn{pointer-events:auto;position:absolute;right:22px;bottom:142px;width:72px;height:72px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#8df2ff,#1e9ed6 70%);border:4px solid #fff;color:#fff;
+    font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 4px 0 #0d5a7a,0 6px 12px rgba(0,0,0,.5);display:none;}
+  #energyBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #0d5a7a;}
+  #crosshair{position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;display:none;pointer-events:none;}
+  #crosshair:before,#crosshair:after{content:'';position:absolute;background:#fff;box-shadow:0 0 4px #000;}
+  #crosshair:before{left:7px;top:0;width:2px;height:16px;}
+  #crosshair:after{top:7px;left:0;width:16px;height:2px;}
+  #pilotHpwrap{position:absolute;top:90px;left:12px;width:200px;max-width:38vw;height:14px;background:rgba(0,0,0,.55);
+    border:2px solid #fff;border-radius:6px;overflow:hidden;display:none;}
+  #pilothpbar{height:100%;width:100%;background:linear-gradient(90deg,#2adfff,#aef4ff);transition:width .15s;}
+  #disembarkBtn{pointer-events:auto;position:absolute;top:64px;right:12px;width:52px;height:52px;border-radius:12px;
+    background:rgba(0,0,0,.45);border:3px solid #fff;color:#fff;font-size:26px;display:none;align-items:center;
+    justify-content:center;cursor:pointer;}
+  #embarkBtn{pointer-events:auto;position:absolute;bottom:150px;left:50%;transform:translateX(-50%);padding:12px 26px;
+    border-radius:12px;background:rgba(20,120,200,.85);border:3px solid #fff;color:#fff;font-family:inherit;
+    font-size:20px;font-weight:bold;display:none;cursor:pointer;text-shadow:1px 1px 0 #000;}
+  #torchBtn{pointer-events:auto;position:absolute;right:110px;bottom:142px;width:72px;height:72px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#ffd97d,#c77e1e 70%);border:4px solid #fff;color:#fff;
+    font-size:32px;display:none;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 4px 0 #6e3f0d,0 6px 12px rgba(0,0,0,.5);}
+  #torchBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #6e3f0d;}
+  #over{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(5,5,12,.82);pointer-events:auto;color:#fff;text-align:center;}
+  #over h1{font-size:52px;color:#ff5a4d;text-shadow:3px 3px 0 #000;margin:0 0 10px;letter-spacing:3px;}
+  #over p{font-size:20px;margin:6px;}
+  #restartBtn{margin-top:18px;font-family:inherit;font-size:24px;font-weight:bold;padding:14px 42px;border-radius:12px;
+    border:4px solid #fff;background:#d63c1e;color:#fff;cursor:pointer;letter-spacing:2px;}
+  #pauseOv{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);
+    color:#fff;font-size:30px;font-weight:bold;pointer-events:auto;text-shadow:2px 2px 0 #000;}
+  #floats{position:absolute;inset:0;overflow:hidden;}
+  .ftext{position:absolute;font-weight:bold;font-size:18px;color:#ffe14d;text-shadow:2px 2px 0 #000;
+    transform:translate(-50%,-50%);white-space:nowrap;}
+  #hint{position:absolute;bottom:8px;left:0;right:0;text-align:center;color:#cfd6e4;font-size:13px;
+    text-shadow:1px 1px 0 #000;opacity:.85;}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="ui">
+  <div id="topbar">
+    <div id="scoreBox"><small>SCORE</small><br><span id="score">0</span></div>
+    <div id="waveBox"><small>SECTOR</small><br><span id="wave">1</span><br><small>🏢 <span id="bleft">0</span></small></div>
+    <button id="muteBtn" title="mute">🔊</button>
+  </div>
+  <div id="hpwrap"><div id="hpbar"></div></div>
+  <div id="banner"></div>
+  <div id="dmg"></div>
+  <div id="joy"><div id="knob"></div></div>
+  <div id="punchBtn">👊</div>
+  <div id="jumpBtn">⤒</div>
+  <div id="energyBtn">⚡</div>
+  <div id="crosshair"></div>
+  <div id="pilotHpwrap"><div id="pilothpbar"></div></div>
+  <button id="disembarkBtn" title="disembark">🚪</button>
+  <button id="embarkBtn">🤖 EMBARK</button>
+  <button id="torchBtn">🔫</button>
+  <div id="floats"></div>
+  <div id="hint">WASD / arrows move &nbsp;•&nbsp; SPACE punch &nbsp;•&nbsp; SHIFT jump &nbsp;•&nbsp; push into a building to climb &nbsp;•&nbsp; F pilot &nbsp;•&nbsp; V gun/torch &nbsp;•&nbsp; v2026.09.23b</div>
+  <div id="over"><h1>WRECKED!</h1><p>SCORE <span id="finalScore">0</span></p><p>SECTOR <span id="finalWave">1</span></p>
+    <button id="restartBtn">REBUILD &amp; SMASH</button></div>
+  <div id="pauseOv">PAUSED — tap to resume</div>
+</div>
+<script>
